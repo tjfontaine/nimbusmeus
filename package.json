@@ -1,0 +1,11 @@
+{
+    "name": "nimbusmeus"
+  , "version": "0.0.1"
+  , "private": true
+  , "dependencies": {
+      "express": "2.5.9"
+    , "jade": ">= 0.0.1"
+    , "remove": ">= 0.1.2"
+    , "walkdir": ">= 0.0.1"
+  }
+}

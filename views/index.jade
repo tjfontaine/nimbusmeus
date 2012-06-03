@@ -1,0 +1,6 @@
+h1= title
+ul
+each collection in collections
+  li
+    a(href="/b/#{collection.name}")= collection.name
+a(href="/settings") Settings

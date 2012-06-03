@@ -1,0 +1,17 @@
+h1= title
+
+if dirs.length
+  h2 Directories
+  ul
+  each dir in dirs
+    li
+      a(href='/b/#{dir.path}')= dir.name
+
+if files.length
+  h2 Files
+  ul
+  each file in files
+    li
+      a(href='/v/#{file.path}')= file.name
+
+a(href="/settings") Settings
