@@ -5,6 +5,7 @@ var walk = require('walkdir');
 
 var config = require('../config');
 var streamer = require('../vlc');
+var hdhomerun = require('../hdhomerun');
 
 var collections = [];
 Object.keys(config.collections).forEach(function (collection) {
@@ -18,6 +19,16 @@ var valid_extensions = {};
 Object.keys(config.formats).forEach(function (type) {
   config.formats[type].forEach(function (ext) {
     valid_extensions[ext] = type;
+  });
+});
+
+var hdhomeruns = [];
+Object.keys(config.hdhomerun).forEach(function(device) {
+  var hd = config.hdhomerun[device];
+  hdhomeruns.push({
+    id: hd.id,
+    name: device,
+    tuners: Object.keys(hd.tuners),
   });
 });
 
@@ -42,6 +53,7 @@ exports.index = function(req, res){
   res.render('index', {
     title: 'NimbusMeus',
     collections: collections,
+    hdhomerun: hdhomeruns,
   });
 };
 
@@ -159,31 +171,18 @@ exports.view = function (req, res) {
   if (!monitor) {
     res.send('back');
   } else {
-    timedout = false;
-    canRender = function () {
-      if (timedout) {
-        res.send('back');
+    streamer.waitStream(monitor.path, 15000, function (err) {
+      if (err) {
+        console.log(err);
+        res.redirect('back');
         return;
       }
 
-      _fs.stat(monitor.path, function (err, stat) {
-        if (err) {
-          setTimeout(function () { canRender(); }, 200);
-        } else {
-          clearTimeout(timerid);
-          res.render('view', {
-            title: title,
-            path: monitor.url,
-          });
-        }
+      res.render('view', {
+        title: title,
+        path: monitor.url,
       });
-    };
-
-    canRender();
-
-    timerid = setTimeout(function () {
-      timedout = true;
-    }, 15000);
+    });
   }
 };
 
@@ -226,4 +225,67 @@ exports.settings = function (req, res) {
 exports.settings_save = function (req, res) {
   req.session.bandwidth = req.body.bandwidth;
   res.redirect('back');
+};
+
+exports.tv = function (req, res) {
+  var tunerfile = config.hdhomerun[req.params.device].tuners[req.params.tuner];
+
+  hdhomerun.parse(tunerfile, function (err, channels) {
+    if (err) {
+      console.log(err);
+      res.redirect('back');
+      return;
+    }
+
+    res.render('tv', {
+      title: 'TV Channels',
+      channels: channels,
+      device: config.hdhomerun[req.params.device].id,
+      tuner: req.params.tuner,
+    });
+  });
+};
+
+exports.tv_view = function (req, res) {
+  var sessid = req.session.hash;
+
+  if (!sessid) {
+    req.session.hash = hashit(req.session.id);
+    sessid = req.session.hash;
+  }
+
+  hdhomerun.tune(req.params, function (err) {
+    if (err) {
+      console.log(err);
+      res.redirect('back');
+      return;
+    }
+
+    var monitor = streamer.play({
+      sess: sessid,
+      mrl:  'udp://@:5000',
+      type: 'video',
+      live: true,
+      host: req.headers.host,
+    });
+
+    hdhomerun.stream(req.params, function (err) {
+      if (err) {
+        console.log(err);
+        res.redirect('back');
+        return;
+      }
+      streamer.waitStream(monitor.path, 30000, function (err) {
+        if (err) {
+          console.log(err);
+          res.redirect('back');
+          return;
+        }
+        res.render('view', {
+          title: 'Live TV',
+          path: monitor.url,
+        });
+      });
+    });
+  });
 };

@@ -40,8 +40,11 @@ app.get('/', routes.index);
 app.get('/b/*', routes.listing);
 app.get('/v/*', routes.view);
 app.get('/stream/*', routes.stream);
-app.get('/settings', routes.settings);
 
+app.get('/tv/:device/:tuner', routes.tv);
+app.get('/view/tv/:device/:tuner/:channel/:program', routes.tv_view);
+
+app.get('/settings', routes.settings);
 app.post('/settings', routes.settings_save);
 
 console.log('Removing temporary folder');

@@ -74,9 +74,9 @@ Streamer.prototype.play = function (opts) {
   sout  = '#transcode{';
 
   if (opts.type === 'video') {
-    //sout += 'width=640,height=480,fps=25,';
     if (opts.bandwidth) {
       sout += 'vb=' + opts.bandwidth + ',';
+      //sout += 'fps=25,width=640,height=480,';
     }
     sout += 'vcodec=h264,venc=x264{aud,profile=baseline,level=30,keint=30,ref=1},';
   }
@@ -97,7 +97,7 @@ Streamer.prototype.play = function (opts) {
     sout += 'splitanywhere=true,';
   } 
 
-  sout += 'seglen=3,';
+  sout += 'seglen=1,';
 
   if (opts.live) {
     sout += 'delsegs=true,numsegs=10,';
@@ -143,6 +143,32 @@ Streamer.prototype.play = function (opts) {
   });
 
   return monitor;
+};
+
+Streamer.prototype.waitStream = function (file, timeout, cb) {
+  var timerid, timedout = false;
+
+  var canRender = function () {
+    if (timedout) {
+      cb(new Error("Timed out waiting on stream to start"));
+      return;
+    }
+
+    _fs.stat(file, function (err, stat) {
+      if (err) {
+        setTimeout(function () { canRender(); }, 200);
+      } else {
+        clearTimeout(timerid);
+        cb();
+      }
+    });
+  };
+
+  canRender();
+
+  timerid = setTimeout(function () {
+    timedout = true;
+  }, timeout);
 };
 
 module.exports = new Streamer();

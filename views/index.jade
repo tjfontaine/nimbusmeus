@@ -1,6 +1,16 @@
 h1= title
+h2 Collections
 ul
 each collection in collections
   li
     a(href="/b/#{collection.name}")= collection.name
+if(hdhomerun.length)
+  h2 HDHomeRun
+  ul
+  each hd in hdhomerun
+    each tuner in hd.tuners
+      li
+        a(href="/tv/#{hd.name}/#{tuner}")
+          label #{hd.name} #{tuner}
+br
 a(href="/settings") Settings
