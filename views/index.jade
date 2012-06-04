@@ -1,13 +1,8 @@
-div(class='ui-grid-a')
-  div(class='ui-block-a', data-role='collapsible', data-collapsed='false')
-    ul(data-role='listview')
-      each collection in collections
-        li
-          a(href="/b/#{collection.name}")= collection.name
-      each hd in hdhomerun
-        each tuner in hd.tuners
-          li
-            a(href="/tv/#{hd.name}/#{tuner}")
-              label #{hd.name} #{tuner}
-  div(class='ui-block-b')
-    p Welcome to NimbusMeus!
+ul(data-role='listview')
+  each collection in collections
+    li
+      a(href="/b/#{collection.name}")= collection.name
+  each hd in hdhomerun
+    each tuner in hd.tuners
+      li
+        a(href="/tv/#{hd.name}/#{tuner}") #{hd.name} #{tuner}
