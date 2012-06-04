@@ -1,5 +1,7 @@
 var _fs = require('fs');
 var _cp = require('child_process');
+var _os = require('os');
+var _net = require('net');
 
 var config = require('./config');
 
@@ -45,7 +47,6 @@ exports.parse = function (file, cb) {
 };
 
 exports.tune = function (opts, cb) {
-  console.log(opts);
   _cp.execFile(config.hdhomerun_config, [
     opts.device,
     'set',
@@ -74,11 +75,31 @@ exports.tune = function (opts, cb) {
 };
 
 exports.stream = function (opts, cb) {
+  var ip = config.hdhomerun_dest_ip;
+
+  if (!ip) {
+    var interfaces = _os.networkInterfaces();
+    for (i in interfaces) {
+      var inf = interfaces[i];
+      if (!/^lo/.test(i)) {
+        for (j in inf) {
+          jaddress = inf[j].address;
+          if (_net.isIPv4(jaddress)) {
+            ip = jaddress;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  console.log('streaming hdhomerun to', ip);
+
   _cp.execFile(config.hdhomerun_config, [
     opts.device,
     'set',
     '/tuner' + opts.tuner + '/target',
-    'udp://' + config.hdhomerun_dest_ip + ':5000',
+    'udp://' + ip + ':5000',
   ]).on('exit', function (signal) {
     cb();
   });
