@@ -1,16 +1,21 @@
-h1= title
+form(method='POST', data-ajax='false')
+  div(data-role='fieldcontain')
+    label(for='bandwidth') BW:
+    input(data-type='range', type='number', name='bandwidth', min='0', max='2048', value='#{bandwidth}')
 
-form(method='POST')
-  label Bandwidth:
-  input(type='textbox', name='bandwidth', value='#{bandwidth}')
-  label FPS:
-  input(type='textbox', name='fps', value='#{fps}')
-  label Width:
-  input(type='textbox', name='width', value='#{width}')
-  label Height:
-  input(type='textbox', name='height', value='#{height}')
-  br
+  div(data-role='fieldcontain')
+    label(for='fps') FPS:
+    input(data-type='range', type='number', name='fps', min='0', max='30', value='#{fps}')
+
+  div(data-role='fieldcontain')
+    label(for='width') Width:
+    input(data-type='range', type='number', name='width', min='0', max='1280', value='#{width}')
+
+  div(data-role='fieldcontain')
+    label(for='height') Height:
+    input(data-type='range', type='number', name='height', value='#{height}')
+
+  if(refer)
+    input(type='hidden', name='refer', value='#{refer}')
+
   input(type='submit', value='save')
-
-br
-a(href="/") Home

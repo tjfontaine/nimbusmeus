@@ -225,6 +225,7 @@ exports.settings = function (req, res) {
 
   res.render('settings', {
     title: 'Settings',
+    refer: req.header('Referrer'),
     bandwidth: settings.bandwidth ? settings.bandwidth : 0,
     fps: settings.fps ? settings.fps : 0,
     width: settings.width ? settings.width : 0,
@@ -246,7 +247,18 @@ exports.settings_save = function (req, res) {
 
   req.session.save();
 
-  res.redirect('back');
+  if (req.body.refer) {
+    res.redirect(req.body.refer);
+  } else {
+    res.render('settings', {
+      title: 'Settings',
+      refer: req.header('Referrer'),
+      bandwidth: settings.bandwidth ? settings.bandwidth : 0,
+      fps: settings.fps ? settings.fps : 0,
+      width: settings.width ? settings.width : 0,
+      height: settings.height ? settings.height : 0,
+    });
+  }
 };
 
 exports.tv = function (req, res) {
