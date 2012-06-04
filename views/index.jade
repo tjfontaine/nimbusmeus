@@ -1,19 +1,13 @@
-div(data-role='page')
-  div(data-role='header')
-    h1= title
-  div(data-role='content')
-    div(class='ui-grid-a')
-      div(class='ui-block-a', data-role='collapsible', data-collapsed='false')
-        ul(data-role='listview')
-          each collection in collections
-            li
-              a(href="/b/#{collection.name}")= collection.name
-          each hd in hdhomerun
-            each tuner in hd.tuners
-              li
-                a(href="/tv/#{hd.name}/#{tuner}")
-                  label #{hd.name} #{tuner}
-      div(class='ui-block-b')
-        p Welcome to NimbusMeus!
-  div(data-role='footer')
-    a(href='/settings', data-rel='dialog') Settings
+div(class='ui-grid-a')
+  div(class='ui-block-a', data-role='collapsible', data-collapsed='false')
+    ul(data-role='listview')
+      each collection in collections
+        li
+          a(href="/b/#{collection.name}")= collection.name
+      each hd in hdhomerun
+        each tuner in hd.tuners
+          li
+            a(href="/tv/#{hd.name}/#{tuner}")
+              label #{hd.name} #{tuner}
+  div(class='ui-block-b')
+    p Welcome to NimbusMeus!

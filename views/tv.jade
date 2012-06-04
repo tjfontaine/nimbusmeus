@@ -1,11 +1,5 @@
-div(data-role='page')
-  div(data-role='header')
-    h1= title
-  div(data-role='content')
-    ul(data-role='listview')
-      for channel in channels
-        li
-          a(href='/view/tv/#{device}/#{tuner}/#{channel.channel}/#{channel.program}') 
-            label #{channel.virtual} #{channel.description}
-  div(data-role='footer')
-    a(href='/settings', data-rel='dialog') Settings
+ul(data-role='listview')
+  for channel in channels
+    li
+      a(href='/view/tv/#{device}/#{tuner}/#{channel.channel}/#{channel.program}') 
+        label #{channel.virtual} #{channel.description}
