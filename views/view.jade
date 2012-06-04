@@ -1,2 +1,7 @@
-h1= title
-video(src='#{path}', controls, autoplay)
+div(data-role='page')
+  div(data-role='header')
+    h1= title
+  div(data-role='content')
+    video(src='#{path}', controls, autoplay)
+  div(data-role='footer')
+    a(href='/settings', data-rel='dialog') Settings
