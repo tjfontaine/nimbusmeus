@@ -6,6 +6,7 @@
 var express = require('express')
   , fs = require('fs')
   , routes = require('./routes');
+var FSStore = require('connect-fs')(express);
 
 var remove = require('remove');
 
@@ -19,7 +20,11 @@ app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.cookieParser());
-  app.use(express.session({ secret: "keyboard cat" }));
+  app.use(express.session({
+    store: new FSStore,
+    secret: 'keyboard cat',
+    cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
+  }));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
