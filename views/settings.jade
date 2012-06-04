@@ -3,5 +3,14 @@ h1= title
 form(method='POST')
   label Bandwidth:
   input(type='textbox', name='bandwidth', value='#{bandwidth}')
+  label FPS:
+  input(type='textbox', name='fps', value='#{fps}')
+  label Width:
+  input(type='textbox', name='width', value='#{width}')
+  label Height:
+  input(type='textbox', name='height', value='#{height}')
   br
   input(type='submit', value='save')
+
+br
+a(href="/") Home

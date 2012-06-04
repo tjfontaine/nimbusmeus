@@ -74,10 +74,22 @@ Streamer.prototype.play = function (opts) {
   sout  = '#transcode{';
 
   if (opts.type === 'video') {
-    if (opts.bandwidth) {
-      sout += 'vb=' + opts.bandwidth + ',';
-      //sout += 'fps=25,width=640,height=480,';
+    if (opts.settings.bandwidth) {
+      sout += 'vb=' + opts.settings.bandwidth + ',';
     }
+
+    if (opts.settings.fps) {
+      sout += 'fps=' + opts.settings.fps + ',';
+    }
+
+    if (opts.settings.width) {
+      sout += 'width=' + opts.settings.width + ',';
+    }
+
+    if (opts.settings.height) {
+      sout += 'height=' + opts.settings.height + ',';
+    }
+
     sout += 'vcodec=h264,venc=x264{aud,profile=baseline,level=30,keint=30,ref=1},';
   }
 
@@ -105,6 +117,7 @@ Streamer.prototype.play = function (opts) {
     sout += 'delsegs=false,numsegs=0,';
   }
 
+  sout += 'ratecontrol=true,';
   sout += 'index=' + monitor.path + ',';
   sout += 'index-url=http://' + opts.host + '/stream/' + opts.sess + '/########.ts';
   sout += '},';

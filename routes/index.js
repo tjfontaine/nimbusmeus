@@ -163,7 +163,7 @@ exports.view = function (req, res) {
       sess: sessid,
       mrl: spath.path,
       host: req.headers.host,
-      bandwidth: req.session.bandwidth,
+      settings: req.session.settings,
       type: ext,
     });
   }
@@ -208,6 +208,7 @@ exports.stream = function (req, res) {
 
   _fs.stat(file, function (err, stat) {
     if (err) {
+      console.log(404, file);
       res.send(404);
     } else {
       res.sendfile(file);
@@ -216,14 +217,35 @@ exports.stream = function (req, res) {
 };
 
 exports.settings = function (req, res) {
+  var settings = req.session.settings;
+
+  if (!req.session.settings) {
+    settings = req.session.settings = {};
+  }
+
   res.render('settings', {
     title: 'Settings',
-    bandwidth: req.session.bandwidth ? req.session.bandwidth : 0,
+    bandwidth: settings.bandwidth ? settings.bandwidth : 0,
+    fps: settings.fps ? settings.fps : 0,
+    width: settings.width ? settings.width : 0,
+    height: settings.height ? settings.height : 0,
   });
 };
 
 exports.settings_save = function (req, res) {
-  req.session.bandwidth = req.body.bandwidth;
+  var settings = req.session.settings;
+
+  if (!settings) {
+    settings = req.session.settings = {};
+  }
+
+  settings.bandwidth = req.body.bandwidth;
+  settings.fps = req.body.fps;
+  settings.width = req.body.width;
+  settings.height = req.body.height;
+
+  req.session.save();
+
   res.redirect('back');
 };
 
@@ -267,6 +289,7 @@ exports.tv_view = function (req, res) {
       type: 'video',
       live: true,
       host: req.headers.host,
+      settings: req.session.settings,
     });
 
     hdhomerun.stream(req.params, function (err) {
