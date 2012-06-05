@@ -169,12 +169,17 @@ exports.view = function (req, res) {
   }
 
   if (!monitor) {
-    res.send('back');
+    res.render('error', {
+      title: 'Error Viewing',
+      error: 'No monitor was returned',
+    });
   } else {
     streamer.waitStream(monitor.path, 15000, function (err) {
       if (err) {
-        console.log(err);
-        res.redirect('back');
+        res.render('error', {
+          title: 'Streaming Error',
+          error: err,
+        });
         return;
       }
 
@@ -266,8 +271,10 @@ exports.tv = function (req, res) {
 
   hdhomerun.parse(tunerfile, function (err, channels) {
     if (err) {
-      console.log(err);
-      res.redirect('back');
+      res.render('error', {
+        title: 'TV Parse Error',
+        error: err,
+      });
       return;
     }
 
@@ -290,8 +297,10 @@ exports.tv_view = function (req, res) {
 
   hdhomerun.tune(req.params, function (err) {
     if (err) {
-      console.log(err);
-      res.redirect('back');
+      res.render('error', {
+        title: 'TV View Error',
+        error: err,
+      });
       return;
     }
 
@@ -306,14 +315,18 @@ exports.tv_view = function (req, res) {
 
     hdhomerun.stream(req.params, function (err) {
       if (err) {
-        console.log(err);
-        res.redirect('back');
+        res.render('error', {
+          title: 'HDHomeRun Stream Error',
+          error: err,
+        });
         return;
       }
       streamer.waitStream(monitor.path, 30000, function (err) {
         if (err) {
-          console.log(err);
-          res.redirect('back');
+          res.render('error', {
+            title: 'HDHomeRun Stream Wait Error',
+            error: err,
+          });
           return;
         }
         res.render('view', {

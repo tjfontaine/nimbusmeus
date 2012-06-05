@@ -54,8 +54,8 @@ exports.tune = function (opts, cb) {
     'auto:' + opts.channel,
   ], function (error, stdout, stderr) {
     if (error) {
-      console.log(stdout);
-      console.log(stderr);
+      error.stdout = stdout;
+      error.stderr = stderr;
       cb(error);
       return;
     }
@@ -66,8 +66,8 @@ exports.tune = function (opts, cb) {
       opts.program,
     ], function (error, stdout, stderr) {
       if (error) {
-        console.log(stdout);
-        console.log(stderr);
+        error.stdout = stdout;
+        error.stderr = stderr;
       }
       cb(error);
     });
