@@ -8,5 +8,6 @@
     , "jade": ">= 0.0.1"
     , "remove": ">= 0.1.2"
     , "walkdir": "https://github.com/tjfontaine/node-walkdir/tarball/norecurse"
+    , "vlc": "https://github.com/tjfontaine/node-vlc/tarball/master"
   }
 }
