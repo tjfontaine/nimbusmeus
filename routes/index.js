@@ -37,6 +37,8 @@ Object.keys(config.hdhomerun).forEach(function(device) {
   });
 });
 
+var db = require('dirty')(_path.join(__dirname, '..', 'index.db'));
+
 exports.index = function(req, res){
   res.render('index', {
     title: 'NimbusMeus',
@@ -45,64 +47,27 @@ exports.index = function(req, res){
   });
 };
 
-var shouldIgnore = function (path) {
-  var ignore = false;
-  var reg, pat, m;
-  for (m in config.ignore) {
-    pat = config.ignore[m];
-    reg = new RegExp(pat, "i");
-    ignore = reg.test(_path.basename(path));
-    if (ignore) {
-      break;
-    }
-  }
-  return ignore;
-}
-
 exports.listing = function (req, res) {
   var spath = toSystem(req.params[0]);
   var title = 'Listing for: ';
   if (spath.path) {
-    var files = [], dirs = [];
-    title += spath.original;
+    var d = db.get(spath.path);
 
-    walk(spath.path, { no_recurse: true })
-    .on('file', function (path, stat) {
-      if (!shouldIgnore(path)) {
-        files.push({
-          name: _path.basename(path),
-          path: path, //toRelative(path, spath),
-          spath: spath,
-        });
-      }
-    })
-    .on('directory', function (path, stat) {
-      if (!shouldIgnore(path)) {
-        dirs.push({
-          name: _path.basename(path),
-          path: toRelative(path, spath),
-        });
-      }
-    })
-    .on('error', function (err) {
-    })
-    .on('end', function () {
-      var compare = function (a, b) {
-        var ret = a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
-        return ret;
-      }
-
-      streamer.processFiles(files, function (err, files) {
-        files = files.sort(compare);
-        dirs = dirs.sort(compare);
-
-        res.render('listing', {
-          title: title,
-          dirs: dirs,
-          files: files,
-        });
-      });
+    d.dirs.forEach(function (dir) {
+      dir.name = _path.basename(dir.path);
+      dir.path = toRelative(dir.path, spath);
     });
+
+    d.files.forEach(function (file) {
+      file.name = _path.basename(file.path);
+      file.path = toRelative(file.path, spath);
+    });
+
+    res.render('listing', {
+      title: _path.basename(spath.path),
+      dirs: d.dirs,
+      files: d.files,
+   });
   } else {
     res.render('error', {
       title: 'Error in Listing',

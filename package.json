@@ -4,6 +4,7 @@
   , "private": true
   , "dependencies": {
       "express": "2.5.9"
+    , "dirty": ">= 0.9.6"
     , "jade": ">= 0.0.1"
     , "remove": ">= 0.1.2"
     , "walkdir": "https://github.com/tjfontaine/node-walkdir/tarball/norecurse"
