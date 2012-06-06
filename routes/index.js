@@ -3,6 +3,12 @@ var _fs = require('fs');
 
 var walk = require('walkdir');
 
+var util = require('../util');
+
+var toSystem = util.toSystem;
+var toRelative = util.toRelative;
+var hashit = util.hashit;
+
 var config = require('../config');
 var streamer = require('../vlc');
 var hdhomerun = require('../hdhomerun');
@@ -32,23 +38,6 @@ Object.keys(config.hdhomerun).forEach(function(device) {
   });
 });
 
-/*
- * GET home page.
- */
-
-var hashit = function (data) {
-  var md5 = require('crypto').createHash('md5');
-  return md5.update(data).digest('hex');
-};
-
-if(typeof(String.prototype.trim) === "undefined")
-{
-  String.prototype.trim = function() 
-  {
-    return String(this).replace(/^\s+|\s+$/g, '');
-  };
-}
-
 exports.index = function(req, res){
   res.render('index', {
     title: 'NimbusMeus',
@@ -56,27 +45,6 @@ exports.index = function(req, res){
     hdhomerun: hdhomeruns,
   });
 };
-
-var toSystem = function (spath) {
-  var result = {
-    original: spath,
-  };
-  if (spath) {
-    spath = spath.split('/');
-    result.root = config.collections[spath[0]];
-    result.collection = spath[0];
-    if (result.root) {
-      result.path = _path.join.apply(null, spath.slice(1));
-      result.path = _path.join(result.root, result.path);
-      result.path = _path.normalize(result.path);
-    }
-  }
-  return result;
-}
-
-var toRelative = function (path, spath) {
-  return path.replace(spath.root, spath.collection);
-}
 
 var shouldIgnore = function (path) {
   var ignore = false;
@@ -104,7 +72,8 @@ exports.listing = function (req, res) {
       if (!shouldIgnore(path)) {
         files.push({
           name: _path.basename(path),
-          path: toRelative(path, spath),
+          path: path, //toRelative(path, spath),
+          spath: spath,
         });
       }
     })
@@ -125,13 +94,15 @@ exports.listing = function (req, res) {
         return ret;
       }
 
-      files = files.sort(compare);
-      dirs = dirs.sort(compare);
+      streamer.processFiles(files, function (err, files) {
+        files = files.sort(compare);
+        dirs = dirs.sort(compare);
 
-      res.render('listing', {
-        title: title,
-        dirs: dirs,
-        files: files,
+        res.render('listing', {
+          title: title,
+          dirs: dirs,
+          files: files,
+        });
       });
     });
   } else {
@@ -159,35 +130,28 @@ exports.view = function (req, res) {
     ext = _path.extname(spath.path).toLowerCase().replace('.', '');
     ext = valid_extensions[ext];
 
-    monitor = streamer.play({
+    streamer.play({
       sess: sessid,
       mrl: spath.path,
       host: req.headers.host,
       settings: req.session.settings,
       type: ext,
-    });
-  }
+    }, function (err, monitor) {
+      streamer.waitStream(monitor.path, 15000, function (err) {
+        if (err) {
+          res.render('error', {
+            title: 'Streaming Error',
+            error: err,
+          });
+          return;
+        }
 
-  if (!monitor) {
-    res.render('error', {
-      title: 'Error Viewing',
-      error: 'No monitor was returned',
-    });
-  } else {
-    streamer.waitStream(monitor.path, 15000, function (err) {
-      if (err) {
-        res.render('error', {
-          title: 'Streaming Error',
-          error: err,
+        res.render('view', {
+          title: title,
+          path: monitor.url,
         });
-        return;
-      }
-
-      res.render('view', {
-        title: title,
-        path: monitor.url,
       });
-    });
+    });;
   }
 };
 
