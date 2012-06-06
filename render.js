@@ -19,7 +19,7 @@ var play = function (opts) {
   }
 
   monitor.path = _path.join(tmpdir, 'stream.m3u8');
-  monitor.url = '/stream/'+ opts.sess + '/stream.m3u8';
+  monitor.url = '/stream/stream.m3u8';
 
   sout  = '#transcode{';
 
@@ -57,9 +57,10 @@ var play = function (opts) {
 
   if (opts.type === 'audio') {
     sout += 'splitanywhere=true,';
-  } 
-
-  sout += 'seglen=1,';
+    sout += 'seglen=5,';
+  }  else {
+    sout += 'seglen=1,';
+  }
 
   if (opts.live) {
     sout += 'delsegs=true,numsegs=10,';
@@ -69,7 +70,7 @@ var play = function (opts) {
 
   sout += 'ratecontrol=true,';
   sout += 'index=' + monitor.path + ',';
-  sout += 'index-url=http://' + opts.host + '/stream/' + opts.sess + '/########.ts';
+  sout += 'index-url=http://' + opts.host + '/stream/########.ts';
   sout += '},';
 
   if (opts.type === 'audio') {
@@ -78,7 +79,7 @@ var play = function (opts) {
     sout += 'mux=ts{use-key-frames},';
   }
 
-  sout += 'dst=' + tmpdir + '/' + '########.ts';
+  sout += 'dst=' + _path.join(tmpdir, '########.ts');
   sout += '},';
 
   if (opts.type === 'audio') {
@@ -89,7 +90,6 @@ var play = function (opts) {
     vlm.addBroadcast('Render', opts.mrl, sout, [], true, false);
     first = false;
   } else {
-    //vlm.stopMedia('Render');
     vlm.changeMedia('Render', opts.mrl, sout, [], true, false);
   }
 

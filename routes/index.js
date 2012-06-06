@@ -158,31 +158,14 @@ exports.view = function (req, res) {
 exports.stream = function (req, res) {
   var path = req.params[0];
   var sessid = req.session.hash;
-  var sm = RegExp('^'+sessid);
-
-  if (!sessid || !sm.test(path)) {
-    res.send(403);
-    return;
-  }
 
   streamer.touch(sessid);
 
-  var file = _path.normalize(
-                _path.join(__dirname,
-                           '..',
-                           'stream',
-                           _path.join.apply(null, path.split('/'))
-                          )
-              );
+  var file = _path.normalize(_path.join(
+    util.tmpdir(), sessid, _path.join.apply(null, path.split('/')
+  )));
 
-  _fs.stat(file, function (err, stat) {
-    if (err) {
-      console.log(404, file);
-      res.send(404);
-    } else {
-      res.sendfile(file);
-    }
-  });
+  res.sendfile(file);
 };
 
 exports.settings = function (req, res) {
