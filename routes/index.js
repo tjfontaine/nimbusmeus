@@ -151,6 +151,8 @@ exports.settings_save = function (req, res) {
   settings.width = req.body.width;
   settings.height = req.body.height;
 
+  req.session.settings = settings;
+
   req.session.save();
 
   if (req.body.refer) {
