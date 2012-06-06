@@ -32,7 +32,12 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(function (req, res, next) {
-    streamer.touch(req.session.id);
+    if (!req.session.hash) {
+      req.session.hash = require('crypto').createHash('md5')
+        .update(req.session.id)
+        .digest('hex');
+    }
+    streamer.touch(req.session.hash);
     next();
   });
   app.use(app.router);

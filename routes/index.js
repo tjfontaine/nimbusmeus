@@ -82,7 +82,7 @@ exports.listing = function (req, res) {
 
 exports.view = function (req, res) {
   var title = 'Viewing: ';
-  var sessid = req.session.id;
+  var sessid = req.session.hash;
   var waiting = true;
   var montior, ext, timeoud, timerid, canRender;
 
@@ -121,7 +121,7 @@ exports.view = function (req, res) {
 
 exports.stream = function (req, res) {
   var path = req.params[0];
-  var sessid = req.session.id;
+  var sessid = req.session.hash;
 
   var file = _path.normalize(_path.join(
     util.tmpdir(), sessid, _path.join.apply(null, path.split('/')
@@ -191,7 +191,7 @@ exports.tv = function (req, res) {
 };
 
 exports.tv_view = function (req, res) {
-  var sessid = req.session.id;
+  var sessid = req.session.hash;
 
   hdhomerun.tune(req.params, function (err) {
     if (err) {
