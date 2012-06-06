@@ -61,6 +61,14 @@ exports.listing = function (req, res) {
     d.files.forEach(function (file) {
       file.name = _path.basename(file.path);
       file.path = toRelative(file.path, spath);
+      var x = file.duration / 1000
+      file.seconds = parseInt(x % 60).toString();
+      x /= 60
+      file.minutes = parseInt(x % 60).toString();
+      x /= 60
+      file.hours = parseInt(x % 24)
+      if (file.minutes.length === 1) file.minutes = '0' + file.minutes;
+      if (file.seconds.length === 1) file.seconds = '0' + file.seconds;
     });
 
     var compare = function (a, b) {

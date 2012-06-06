@@ -30,6 +30,11 @@ var processFile = function (file, cb) {
   vlc.mediaFields.forEach(function (field) {
     result[field] = media[field];
   });
+
+  try {
+    result.duration = media.duration;
+  } catch(e) {}
+
   return result;
 };
 
