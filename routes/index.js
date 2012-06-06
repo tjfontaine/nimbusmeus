@@ -268,34 +268,35 @@ exports.tv_view = function (req, res) {
       return;
     }
 
-    var monitor = streamer.play({
+    streamer.play({
       sess: sessid,
       mrl:  'udp://@:5000',
       type: 'video',
       live: true,
       host: req.headers.host,
       settings: req.session.settings,
-    });
+    }, function (err, monitor) {
 
-    hdhomerun.stream(req.params, function (err) {
-      if (err) {
-        res.render('error', {
-          title: 'HDHomeRun Stream Error',
-          error: err,
-        });
-        return;
-      }
-      streamer.waitStream(monitor.path, 30000, function (err) {
+      hdhomerun.stream(req.params, function (err) {
         if (err) {
           res.render('error', {
-            title: 'HDHomeRun Stream Wait Error',
+            title: 'HDHomeRun Stream Error',
             error: err,
           });
           return;
         }
-        res.render('view', {
-          title: 'Live TV',
-          path: monitor.url,
+        streamer.waitStream(monitor.path, 30000, function (err) {
+          if (err) {
+            res.render('error', {
+              title: 'HDHomeRun Stream Wait Error',
+              error: err,
+            });
+            return;
+          }
+          res.render('view', {
+            title: 'Live TV',
+            path: monitor.url,
+          });
         });
       });
     });
