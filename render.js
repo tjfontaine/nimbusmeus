@@ -57,7 +57,7 @@ var play = function (opts) {
 
   if (opts.type === 'audio') {
     sout += 'splitanywhere=true,';
-    sout += 'seglen=5,';
+    sout += 'seglen=3,';
   }  else {
     sout += 'seglen=1,';
   }
@@ -99,7 +99,7 @@ var play = function (opts) {
 };
 
 var poll = setInterval(function () {
-  console.log(vlm.showMedia('Render'));
+  //console.log(vlm.showMedia('Render'));
 }, 30000);
 
 process.on('message', function (data) {
@@ -129,6 +129,7 @@ process.on('message', function (data) {
         vlm.stopMedia('Render');
       } catch (e) {}
       clearInterval(poll);
+      process.exit();
       break;
   }
 });

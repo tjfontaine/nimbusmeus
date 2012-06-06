@@ -10,14 +10,17 @@ var util = require('./util');
 var vlc = require('vlc');
 
 var Streamer = function () {
-  var self = this;
   this.running = {};
+};
 
-  process.on('SIGINT', function () {
-    Object.keys(self.running).forEach(function (i) {
-      var instance = self.running[i];
-      instance.child.send({ command: 'DIE' });
-    })
+Streamer.prototype.killall = function () {
+  var self = this;
+
+  Object.keys(self.running).forEach(function (i) {
+    var instance = self.running[i];
+    instance.child.send({ command: 'DIE' });
+    instance.child.kill('SIGKILL');
+    self.stopIdle(i);
   });
 };
 
@@ -37,12 +40,40 @@ Streamer.prototype.newInstance = function (sess) {
   return instance;
 };
 
+Streamer.prototype.startIdle = function (sess) {
+  var instance = this.running[sess];
+  var self = this;
+
+  if (instance && !instance.idle) {
+    instance.idle = setInterval(function () {
+      var now = new Date().getTime();
+      var delta = now - instance.lastAccess;
+      if (delta > config.MAX_IDLE) {
+        instance.child.send({
+          command: 'STOP',
+        });
+        self.stopIdle(sess);
+      }
+    }, 1 * 1000)
+  }
+};
+
+Streamer.prototype.stopIdle = function (sess) {
+  var instance = this.running[sess];
+  if (instance && instance.idle) {
+    clearInterval(instance.idle);
+    instance.idle = undefined;
+  }
+};
+
 Streamer.prototype.play = function (opts, cb) {
   var instance = this.running[opts.sess];
 
   if (!instance) {
     instance = this.newInstance(opts.sess);
   }
+
+  this.startIdle(opts.sess);
 
   instance.child.send({
     command: 'STOP',

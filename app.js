@@ -16,6 +16,8 @@ var app = module.exports = express.createServer();
 
 // Configuration
 
+var streamer = require('./vlc');
+
 app.configure(function(){
   app.use(express.logger());
   app.set('views', __dirname + '/views');
@@ -28,6 +30,10 @@ app.configure(function(){
   }));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
+  app.use(function (req, res, next) {
+    streamer.touch(req.session.id);
+    next();
+  });
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
@@ -70,4 +76,9 @@ try {
 
 app.listen(8000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+});
+
+process.on('SIGINT', function () {
+  streamer.killall();
+  process.exit();
 });
