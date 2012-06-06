@@ -7,7 +7,6 @@ var util = require('../util');
 
 var toSystem = util.toSystem;
 var toRelative = util.toRelative;
-var hashit = util.hashit;
 
 var config = require('../config');
 var streamer = require('../vlc');
@@ -113,16 +112,11 @@ exports.listing = function (req, res) {
 
 exports.view = function (req, res) {
   var title = 'Viewing: ';
-  var sessid = req.session.hash;
+  var sessid = req.session.id;
   var waiting = true;
   var montior, ext, timeoud, timerid, canRender;
 
   var spath = toSystem(req.params[0]);
-
-  if (!sessid) {
-    req.session.hash = hashit(req.session.id);
-    sessid = req.session.hash;
-  }
 
   if (spath.path) {
     title += _path.basename(spath.path);
@@ -157,7 +151,7 @@ exports.view = function (req, res) {
 
 exports.stream = function (req, res) {
   var path = req.params[0];
-  var sessid = req.session.hash;
+  var sessid = req.session.id;
 
   streamer.touch(sessid);
 
@@ -227,12 +221,7 @@ exports.tv = function (req, res) {
 };
 
 exports.tv_view = function (req, res) {
-  var sessid = req.session.hash;
-
-  if (!sessid) {
-    req.session.hash = hashit(req.session.id);
-    sessid = req.session.hash;
-  }
+  var sessid = req.session.id;
 
   hdhomerun.tune(req.params, function (err) {
     if (err) {
