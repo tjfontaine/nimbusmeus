@@ -6,6 +6,8 @@ var util = require('./util');
 var vlc = require('vlc');
 var vlm = vlc.vlm;
 
+var first = true;
+
 var play = function (opts) {
   var tmpdir = util.tmpdir(opts.sess);
   var monitor = {};
@@ -83,7 +85,14 @@ var play = function (opts) {
     sout += 'select=audio}';
   }
 
-  vlm.addBroadcast('Render', opts.mrl, sout, [], true, false);
+  if (first) {
+    vlm.addBroadcast('Render', opts.mrl, sout, [], true, false);
+    first = false;
+  } else {
+    //vlm.stopMedia('Render');
+    vlm.changeMedia('Render', opts.mrl, sout, [], true, false);
+  }
+
   vlm.playMedia('Render');
 
   return monitor;
@@ -108,10 +117,18 @@ process.on('message', function (data) {
       });
       break;
     case 'STOP':
+      try {
+        vlm.stopMedia('Render');
+      } catch(e) {}
       process.send({
         command: 'STOP',
-        result: vlm.stopMedia('Render'),
       });
+      break;
+    case 'DIE':
+      try {
+        vlm.stopMedia('Render');
+      } catch (e) {}
+      clearInterval(poll);
       break;
   }
 });

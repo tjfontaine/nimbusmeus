@@ -12,6 +12,13 @@ var vlc = require('vlc');
 var Streamer = function () {
   var self = this;
   this.running = {};
+
+  process.on('SIGINT', function () {
+    Object.keys(self.running).forEach(function (i) {
+      var instance = self.running[i];
+      instance.child.send({ command: 'DIE' });
+    })
+  });
 };
 
 Streamer.prototype.touch = function (sess) {
@@ -22,11 +29,6 @@ Streamer.prototype.touch = function (sess) {
 };
 
 Streamer.prototype.newInstance = function (sess) {
-  try {
-    remove.removeSync(util.tmpdir(sess));
-  } catch (e) {
-  }
-
   var instance = this.running[sess] = {};
   this.touch(sess);
 
@@ -40,19 +42,26 @@ Streamer.prototype.play = function (opts, cb) {
 
   if (!instance) {
     instance = this.newInstance(opts.sess);
-  } else {
-    instance.child.send({
-      command: 'STOP',
-    });
   }
 
   instance.child.send({
-    command: 'PLAY',
-    opts: opts,
+    command: 'STOP',
   });
 
   instance.child.once('message', function (data) {
-    cb(null, data.result);
+    try {
+      remove.removeSync(util.tmpdir(opts.sess));
+    } catch (e) {
+    }
+
+    instance.child.send({
+      command: 'PLAY',
+      opts: opts,
+    });
+
+    instance.child.once('message', function (data) {
+      cb(null, data.result);
+    });
   });
 };
 
