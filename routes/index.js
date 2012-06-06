@@ -85,7 +85,6 @@ exports.listing = function (req, res) {
       }
     })
     .on('error', function (err) {
-      console.log(arguments);
     })
     .on('end', function () {
       var compare = function (a, b) {
@@ -105,8 +104,10 @@ exports.listing = function (req, res) {
       });
     });
   } else {
-    console.log('no spath', spath);
-    res.render('listing', { title: title, dirs: [], files: [], root: '' });
+    res.render('error', {
+      title: 'Error in Listing',
+      error: 'Path does not exist',
+    });
   }
 };
 
@@ -152,8 +153,6 @@ exports.view = function (req, res) {
 exports.stream = function (req, res) {
   var path = req.params[0];
   var sessid = req.session.id;
-
-  streamer.touch(sessid);
 
   var file = _path.normalize(_path.join(
     util.tmpdir(), sessid, _path.join.apply(null, path.split('/')
