@@ -23,11 +23,6 @@ exports.toRelative = function (path, spath) {
   return path.replace(spath.root, spath.collection);
 }
 
-exports.hashit = function (data) {
-  var md5 = require('crypto').createHash('md5');
-  return md5.update(data).digest('hex');
-};
-
 exports.tmpdir = function (sess) {
   return _path.normalize(_path.join(config.TMPDIR, sess));
 };
