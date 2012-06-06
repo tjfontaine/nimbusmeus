@@ -50,9 +50,9 @@ exports.index = function(req, res){
 exports.listing = function (req, res) {
   var spath = toSystem(req.params[0]);
   var title = 'Listing for: ';
-  if (spath.path) {
-    var d = db.get(spath.path);
+  var d = db.get(spath.path || 'DNE');
 
+  if (spath.path && d) {
     d.dirs.forEach(function (dir) {
       dir.name = _path.basename(dir.path);
       dir.path = toRelative(dir.path, spath);
@@ -63,10 +63,14 @@ exports.listing = function (req, res) {
       file.path = toRelative(file.path, spath);
     });
 
+    var compare = function (a, b) {
+      return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
+    }
+
     res.render('listing', {
       title: _path.basename(spath.path),
-      dirs: d.dirs,
-      files: d.files,
+      dirs: d.dirs.sort(compare),
+      files: d.files.sort(compare),
    });
   } else {
     res.render('error', {
