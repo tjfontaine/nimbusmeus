@@ -4,7 +4,6 @@
   , "private": true
   , "dependencies": {
       "express": "2.5.9"
-    , "connect-fs": "https://github.com/tjfontaine/connect-fs/tarball/enoent"
     , "jade": ">= 0.0.1"
     , "remove": ">= 0.1.2"
     , "walkdir": "https://github.com/tjfontaine/node-walkdir/tarball/norecurse"
