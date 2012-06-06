@@ -134,7 +134,7 @@ exports.view = function (req, res) {
       sess: sessid,
       mrl: spath.path,
       host: req.headers.host,
-      settings: req.session.settings,
+      settings: req.session.settings || {},
       type: ext,
     }, function (err, monitor) {
       streamer.waitStream(monitor.path, 15000, function (err) {
@@ -169,11 +169,7 @@ exports.stream = function (req, res) {
 };
 
 exports.settings = function (req, res) {
-  var settings = req.session.settings;
-
-  if (!req.session.settings) {
-    settings = req.session.settings = {};
-  }
+  var settings = req.session.settings || {};
 
   res.render('settings', {
     title: 'Settings',
@@ -186,11 +182,7 @@ exports.settings = function (req, res) {
 };
 
 exports.settings_save = function (req, res) {
-  var settings = req.session.settings;
-
-  if (!settings) {
-    settings = req.session.settings = {};
-  }
+  var settings = req.session.settings || {};
 
   settings.bandwidth = req.body.bandwidth;
   settings.fps = req.body.fps;
@@ -257,7 +249,7 @@ exports.tv_view = function (req, res) {
       type: 'video',
       live: true,
       host: req.headers.host,
-      settings: req.session.settings,
+      settings: req.session.settings || {},
     }, function (err, monitor) {
 
       hdhomerun.stream(req.params, function (err) {
