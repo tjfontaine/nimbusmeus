@@ -37,7 +37,7 @@ Object.keys(config.hdhomerun).forEach(function(device) {
   });
 });
 
-var db = require('dirty')(_path.join(__dirname, '..', 'index.db'));
+var db = require('../db');
 
 exports.index = function(req, res){
   res.render('index', {
@@ -49,10 +49,15 @@ exports.index = function(req, res){
 
 exports.listing = function (req, res) {
   var spath = toSystem(req.params[0]);
-  var title = 'Listing for: ';
-  var d = db.get(spath.path || 'DNE');
+  db.mediaGet(spath.path || 'DNE', function (err, d) {
+    if (err) {
+      res.render('error', {
+        title: 'Error in Listing',
+        error: err,
+      });
+      return;
+    }
 
-  if (spath.path && d) {
     d.dirs.forEach(function (dir) {
       dir.name = _path.basename(dir.path);
       dir.path = toRelative(dir.path, spath);
@@ -80,12 +85,7 @@ exports.listing = function (req, res) {
       dirs: d.dirs.sort(compare),
       files: d.files.sort(compare),
    });
-  } else {
-    res.render('error', {
-      title: 'Error in Listing',
-      error: 'Path does not exist',
-    });
-  }
+  });
 };
 
 exports.view = function (req, res) {

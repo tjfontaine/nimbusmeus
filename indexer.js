@@ -4,8 +4,7 @@ var walk = require('walkdir');
 var vlc = require('vlc');
 
 var config = require('./config');
-
-var db = require('dirty')('index.db');
+var db = require('./db');
 
 var shouldIgnore = function (path) {
   var ignore = false;
@@ -48,7 +47,7 @@ var index = function (ipath) {
       if (!shouldIgnore(path)) {
         result = processFile(path);
         files.push(result);
-        db.set(path, result);
+        db.mediaSet(path, result);
       }
     })
     .on('directory', function (path, stat) {
@@ -60,7 +59,7 @@ var index = function (ipath) {
       }
     })
     .on('end', function () {
-      db.set(ipath, { files: files, dirs: dirs });
+      db.mediaSet(ipath, { files: files, dirs: dirs });
     });
 };
 

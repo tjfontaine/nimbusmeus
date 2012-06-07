@@ -24,5 +24,5 @@ exports.toRelative = function (path, spath) {
 }
 
 exports.tmpdir = function (sess) {
-  return _path.normalize(_path.join(config.TMPDIR, sess));
+  return _path.normalize(_path.join(config.TMPDIR, 'stream', sess));
 };

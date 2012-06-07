@@ -5,8 +5,8 @@
 
 var express = require('express')
   , fs = require('fs')
-  , routes = require('./routes');
-var FSStore = require('connect-fs')(express);
+  , routes = require('./routes')
+  , path = require('path');
 
 var remove = require('remove');
 
@@ -23,11 +23,6 @@ app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.cookieParser());
-  //app.use(express.session({
-  //  store: new FSStore,
-  //  secret: 'keyboard cat',
-  //  cookie: { maxAge: 1 * 60 * 60 * 1000 }
-  //}));
   app.use(express.session({ secret: "keyboard cat" }));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
@@ -65,17 +60,20 @@ app.get('/view/tv/:device/:tuner/:channel/:program', routes.tv_view);
 app.get('/settings', routes.settings);
 app.post('/settings', routes.settings_save);
 
-console.log('Removing temporary folder');
-
 try {
-  remove.removeSync(config.TMPDIR);
+  fs.mkdirSync(config.TMPDIR);
 } catch (e) {
   console.log(e);
 }
 
-console.log('Recreating temporary folder');
 try {
-  fs.mkdirSync(config.TMPDIR);
+  remove.removeSync(path.join(config.TMPDIR, 'stream'));
+} catch (e) {
+  console.log(e);
+}
+
+try {
+  fs.mkdirSync(path.join(config.TMPDIR, 'stream'));
 } catch (e) {
   console.log(e);
 }

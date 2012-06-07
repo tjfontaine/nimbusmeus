@@ -15,7 +15,6 @@ var play = function (opts) {
   try {
     _fs.mkdirSync(tmpdir);
   } catch (e) {
-    console.log(e);
   }
 
   monitor.path = _path.join(tmpdir, 'stream.m3u8');
@@ -99,7 +98,6 @@ var play = function (opts) {
 };
 
 var poll = setInterval(function () {
-  //console.log(vlm.showMedia('Render'));
 }, 30000);
 
 process.on('message', function (data) {
