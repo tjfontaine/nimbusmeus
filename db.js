@@ -13,12 +13,8 @@ var ndb = function () {
   });
 
   this.mediaGet = function (key, cb) {
-    var fired = false;
-    db.each('SELECT value FROM media WHERE key = ? LIMIT 1', key, function (err, row) {
-      if (!fired) {
-        fired = true;
-        cb(err, JSON.parse(row.value));
-      }
+    db.get('SELECT value FROM media WHERE key = ?', key, function (err, row) {
+      cb(err, row);
     });
   };
 

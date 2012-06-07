@@ -37,7 +37,7 @@ Object.keys(config.hdhomerun).forEach(function(device) {
   });
 });
 
-var db = require('../db');
+var index = require('../indexer');
 
 exports.index = function(req, res){
   res.render('index', {
@@ -49,7 +49,7 @@ exports.index = function(req, res){
 
 exports.listing = function (req, res) {
   var spath = toSystem(req.params[0]);
-  db.mediaGet(spath.path || 'DNE', function (err, d) {
+  index.get(spath.path || 'DNE', function (err, d) {
     if (err) {
       res.render('error', {
         title: 'Error in Listing',
