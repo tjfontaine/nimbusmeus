@@ -163,9 +163,11 @@ Index.prototype.thumbnail = function (path, cb) {
     player.media = media;
 
     player.play();
-    player.position = 0.3;
+    // Set thumbnail position as 1 second
+    player.time = 1000;
 
-    while (player.position < 0.301) {
+    // Wait for it to advance 100ms
+    while (player.time < 1100) {
     }
 
     try {
