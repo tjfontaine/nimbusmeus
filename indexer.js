@@ -22,29 +22,42 @@ var Index = function () {};
 Index.prototype.get = function (path, cb) {
   var self = this;
 
-  db.mediaGet(path, function (err, result) {
-    if (result) {
-      cb(err, JSON.parse(result.value));
-      return;
-    }
-
-    self.index(path, function (err, result) {
-      cb(err, result);
-    });
+  self.index(path, function (err, result) {
+    cb(err, result);
   });
 };
 
 Index.prototype.index = function (ipath, cb) {
   var self = this, files = [], dirs = [];
+  var ended = false, outstanding = 0, hadfile = false;
+  var walk_result = {
+    files: files,
+    dirs: dirs,
+  };
 
   walk(ipath, { no_recurse: true })
     .on('error', function () {})
     .on('file', function (path, stat) {
       var result;
+
       if (!self.shouldIgnore(path)) {
-        result = self.processFile(path);
-        files.push(result);
-        db.mediaSet(path, result);
+        hadfile = true;
+        outstanding += 1;
+
+        db.mediaGet(path, function (err, result) {
+          outstanding -= 1;
+
+          if (!result || !result.stat || stat.mtime != result.stat.mtime) {
+            result = self.processFile(path);
+            result.stat = stat;
+            db.mediaSet(path, result);
+          }
+
+          files.push(result);
+          if (ended && !outstanding) {
+            cb(null, walk_result);
+          }
+        });
       }
     })
     .on('directory', function (path, stat) {
@@ -55,9 +68,11 @@ Index.prototype.index = function (ipath, cb) {
       }
     })
     .on('end', function () {
-      var result = { files: files, dirs: dirs };
-      db.mediaSet(ipath, result);
-      cb(null, result);
+      //db.mediaSet(ipath, result);
+      ended = true;
+      if (!hadfile) {
+        cb(null, walk_result);
+      }
     });
 };
 
