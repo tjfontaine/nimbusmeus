@@ -3,6 +3,8 @@
  * Module dependencies.
  */
 
+process.title = "NimbusMeus";
+
 var express = require('express')
   , fs = require('fs')
   , routes = require('./routes')

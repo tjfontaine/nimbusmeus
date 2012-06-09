@@ -1,3 +1,5 @@
+process.title = "NimbusMeus-render";
+
 var _path = require('path');
 var _fs = require('fs');
 
