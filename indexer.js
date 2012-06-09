@@ -1,9 +1,14 @@
 var _path = require('path');
+var _fs = require('fs');
 
 var walk = require('walkdir');
 var vlc = require('vlc')([
   '-I', 'dummy',
   '-V', 'dummy',
+  //'--verbose', '3',
+  '--no-audio',
+  '--no-stats',
+  '--no-sub-autodetect-file',
   '--no-video-title-show',
   '--no-disable-screensaver',
   '--no-snapshot-preview',
@@ -95,7 +100,7 @@ Index.prototype.index = function (ipath, cb) {
 };
 
 Index.prototype.processFile = function (file, cb) {
-  var result = { path: file };
+  var result = { path: file }, foundVideo, foundAudio;
 
   var media = vlc.mediaFromFile(file);
   media.parseSync();
@@ -107,6 +112,25 @@ Index.prototype.processFile = function (file, cb) {
   try {
     result.duration = media.duration;
   } catch(e) {}
+
+  media.track_info.forEach(function (info) {
+    switch (info.type) {
+      case 'audio':
+        foundAudio = true;
+        break;
+      case 'video':
+        foundVideo = true;
+        break;
+    }
+  });
+
+  if (foundVideo) {
+    result.type = 'video';
+  } else if (foundAudio) {
+    result.type = 'audio';
+  }
+
+  media.release();
 
   return result;
 };
@@ -122,6 +146,39 @@ Index.prototype.shouldIgnore = function (path) {
     }
   }
   return ignore;
-}
+};
+
+Index.prototype.thumbnail = function (path, cb) {
+  var file_dest = _path.join(config.TMPDIR, 'thumbnail', _path.basename(path)) + '.png';
+
+  _fs.stat(file_dest, function (err, stat) {
+    if (!err) {
+      cb(err, file_dest);
+      return;
+    }
+
+    var player = vlc.mediaplayer;
+    var media = vlc.mediaFromFile(path);
+
+    player.media = media;
+
+    player.play();
+    player.position = 0.3;
+
+    while (player.position < 0.301) {
+    }
+
+    try {
+      player.video.take_snapshot(0, file_dest, player.video.width, player.video.height);
+    } catch (e) {
+      console.log(e);
+    }
+
+    player.stop();
+    media.release();
+
+    cb(err, file_dest);
+  });
+};
 
 module.exports = new Index();

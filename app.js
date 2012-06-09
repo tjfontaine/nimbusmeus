@@ -62,10 +62,16 @@ app.get('/view/tv/:device/:tuner/:channel/:program', routes.tv_view);
 app.get('/settings', routes.settings);
 app.post('/settings', routes.settings_save);
 
+app.get('/thumbnail/*', routes.thumbnail);
+
 try {
   fs.mkdirSync(config.TMPDIR);
 } catch (e) {
-  console.log(e);
+}
+
+try {
+  fs.mkdirSync(path.join(config.TMPDIR, 'thumbnail'));
+} catch (e) {
 }
 
 try {

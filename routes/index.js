@@ -244,3 +244,10 @@ exports.tv_view = function (req, res) {
     });
   });
 };
+
+exports.thumbnail = function (req, res) {
+  var spath = toSystem(req.params[0]);
+  index.thumbnail(spath.path || 'DNE', function (err, result) {
+    res.sendfile(result);
+  });
+};

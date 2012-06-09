@@ -19,3 +19,5 @@ ul(data-role='listview')
               #{file.hours}:
             #{file.minutes}:#{file.seconds}
 
+        if (file.type === 'video')
+          img(src='/thumbnail/#{file.path}')
