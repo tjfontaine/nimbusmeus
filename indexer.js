@@ -1,7 +1,13 @@
 var _path = require('path');
 
 var walk = require('walkdir');
-var vlc = require('vlc');
+var vlc = require('vlc')([
+  '-I', 'dummy',
+  '-V', 'dummy',
+  '--no-video-title-show',
+  '--no-disable-screensaver',
+  '--no-snapshot-preview',
+]);
 
 var config = require('./config');
 var db = require('./db');

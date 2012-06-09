@@ -3,7 +3,10 @@ var _fs = require('fs');
 
 var util = require('./util');
 
-var vlc = require('vlc');
+var vlc = require('vlc')([
+  '-I', 'dummy',
+  '--audio-language', 'eng',
+]);
 var vlm = vlc.vlm;
 
 var first = true;
