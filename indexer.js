@@ -29,11 +29,6 @@ Index.prototype.get = function (path, cb) {
 
 Index.prototype.index = function (ipath, cb) {
   var self = this, files = [], dirs = [];
-  var ended = false, outstanding = 0, hadfile = false;
-  var walk_result = {
-    files: files,
-    dirs: dirs,
-  };
 
   walk(ipath, { no_recurse: true })
     .on('error', function () {})
@@ -41,22 +36,9 @@ Index.prototype.index = function (ipath, cb) {
       var result;
 
       if (!self.shouldIgnore(path)) {
-        hadfile = true;
-        outstanding += 1;
-
-        db.mediaGet(path, function (err, result) {
-          outstanding -= 1;
-
-          if (!result || !result.stat || stat.mtime != result.stat.mtime) {
-            result = self.processFile(path);
-            result.stat = stat;
-            db.mediaSet(path, result);
-          }
-
-          files.push(result);
-          if (ended && !outstanding) {
-            cb(null, walk_result);
-          }
+        files.push({
+          path: path,
+          stat: stat,
         });
       }
     })
@@ -68,11 +50,47 @@ Index.prototype.index = function (ipath, cb) {
       }
     })
     .on('end', function () {
-      //db.mediaSet(ipath, result);
-      ended = true;
-      if (!hadfile) {
-        cb(null, walk_result);
+      var f = [], fn = {};
+
+      if (files.length === 0) {
+        cb(null, {
+          files: files,
+          dirs: dirs,
+        });
+        return;
       }
+
+      files.forEach(function (file) {
+        f.push(file.path);
+        fn[file.path] = file.stat;
+      });
+
+      files = [];
+
+      db.mediaGetAll(f, function (err, rows) {
+        rows.forEach(function (row) {
+          var result = JSON.parse(row.value);
+          var mtime = JSON.stringify(fn[row.key].mtime).replace(/"/g, '');
+
+          if (result.stat && result.stat.mtime == mtime) {
+            var idx = f.indexOf(row.key);
+            f = f.splice(idx, 1);
+            files.push(result);
+          }
+        });
+
+        f.forEach(function (path) {
+          var result = self.processFile(path);
+          result.stat = fn[path];
+          db.mediaSet(path, result);
+          files.push(result);
+        });
+
+        cb(null, {
+          dirs: dirs,
+          files: files,
+        });
+      });
     });
 };
 

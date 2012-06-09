@@ -18,6 +18,13 @@ var ndb = function () {
     });
   };
 
+  this.mediaGetAll = function (keys, cb) {
+    var qs = keys.map(function () { return '?'; }).join(',');
+    db.all('SELECT key, value FROM media WHERE key IN (' + qs + ')', keys, function (err, rows) {
+      cb(err, rows);
+    });
+  }
+
   this.mediaSet = function (key, value) {
     db.run('INSERT OR REPLACE INTO media (key, value) VALUES (?, ?)',
       key, JSON.stringify(value));
