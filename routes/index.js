@@ -9,7 +9,7 @@ var toSystem = util.toSystem;
 var toRelative = util.toRelative;
 
 var config = require('../config');
-var streamer = require('../vlc');
+var streamer = require('../streamer');
 var hdhomerun = require('../hdhomerun');
 
 var collections = [];

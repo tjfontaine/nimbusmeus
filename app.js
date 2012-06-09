@@ -16,7 +16,7 @@ var app = module.exports = express.createServer();
 
 // Configuration
 
-var streamer = require('./vlc');
+var streamer = require('./streamer');
 
 app.configure(function(){
   app.use(express.logger());
