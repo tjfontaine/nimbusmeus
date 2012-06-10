@@ -171,7 +171,7 @@ Index.prototype.thumbnail = function (path, cb) {
     }
 
     try {
-      player.video.take_snapshot(0, file_dest, player.video.width, player.video.height);
+      player.video.take_snapshot(0, file_dest, 80, 45);
     } catch (e) {
       console.log(e);
     }
