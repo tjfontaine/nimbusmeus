@@ -79,7 +79,7 @@ Index.prototype.index = function (ipath, cb) {
 
           if (result.stat && result.stat.mtime == mtime) {
             var idx = f.indexOf(row.key);
-            f = f.splice(idx, 1);
+            f.splice(idx, 1);
             files.push(result);
           }
         });
