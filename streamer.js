@@ -18,8 +18,6 @@ Streamer.prototype.killall = function () {
 
   Object.keys(self.running).forEach(function (i) {
     var instance = self.running[i];
-    instance.child.send({ command: 'DIE' });
-    instance.child.kill('SIGKILL');
     self.stopIdle(i);
   });
 };
@@ -49,20 +47,20 @@ Streamer.prototype.startIdle = function (sess) {
       var now = new Date().getTime();
       var delta = now - instance.lastAccess;
       if (delta > config.MAX_IDLE) {
-        instance.child.send({
-          command: 'STOP',
-        });
         self.stopIdle(sess);
       }
-    }, 1 * 1000)
+    }, config.MAX_IDLE / 4)
   }
 };
 
 Streamer.prototype.stopIdle = function (sess) {
   var instance = this.running[sess];
   if (instance && instance.idle) {
+    instance.child.send({ command: 'DIE' });
     clearInterval(instance.idle);
     instance.idle = undefined;
+    instance.child = undefined;
+    delete this.running[sess];
   }
 };
 
