@@ -11,9 +11,46 @@ var vlc = require('vlc')([
 ]);
 var vlm = vlc.vlm;
 
+var parent = require('./ipc')(process);
+var config = require('./config');
+
 var first = true;
 
-var play = function (opts) {
+var poll = setInterval(function () {
+}, config.MAX_IDLE);
+
+parent.on('pause', function () {
+  var err, result;
+  try {
+    result = vlm.pauseMedia('Render');
+  } catch (e) {
+    err = e;
+  } finally {
+    parent.send('paused', err, result);
+  }
+});
+
+parent.on('stop', function () {
+  var err, result;
+  try {
+    result = vlm.stopMedia('Render');
+  } catch(e) {
+    err = e;
+  } finally {
+    parent.send('stopped', err, result);
+  }
+});
+
+parent.on('die', function () {
+  try {
+    vlm.stopMedia('Render');
+  } catch (e) {}
+
+  clearInterval(poll);
+  process.exit();
+});
+
+parent.on('play', function (opts) {
   var tmpdir = util.tmpdir(opts.sess);
   var monitor = {};
 
@@ -99,40 +136,5 @@ var play = function (opts) {
 
   vlm.playMedia('Render');
 
-  return monitor;
-};
-
-var poll = setInterval(function () {
-}, 30000);
-
-process.on('message', function (data) {
-  switch (data.command) {
-    case 'PLAY':
-      process.send({
-        command: 'PAUSE',
-        result: play(data.opts),
-      });
-      break;
-    case 'PAUSE':
-      process.send({
-        command: 'PAUSE',
-        result: vlm.pauseMedia('Render'),
-      });
-      break;
-    case 'STOP':
-      try {
-        vlm.stopMedia('Render');
-      } catch(e) {}
-      process.send({
-        command: 'STOP',
-      });
-      break;
-    case 'DIE':
-      try {
-        vlm.stopMedia('Render');
-      } catch (e) {}
-      clearInterval(poll);
-      process.exit();
-      break;
-  }
+  parent.send('played', null, monitor);
 });

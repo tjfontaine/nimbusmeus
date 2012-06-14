@@ -6,6 +6,7 @@ var remove = require('remove');
 
 var config = require('./config');
 var util = require('./util');
+var ipc = require('./ipc');
 
 var vlc = require('vlc');
 
@@ -33,7 +34,7 @@ Streamer.prototype.newInstance = function (sess) {
   var instance = this.running[sess] = {};
   this.touch(sess);
 
-  instance.child = _cp.fork(_path.join(__dirname, 'render.js'));
+  instance.child = ipc(_cp.fork(_path.join(__dirname, 'render.js')));
 
   return instance;
 };
@@ -56,7 +57,7 @@ Streamer.prototype.startIdle = function (sess) {
 Streamer.prototype.stopIdle = function (sess) {
   var instance = this.running[sess];
   if (instance && instance.idle) {
-    instance.child.send({ command: 'DIE' });
+    instance.child.send('die');
     clearInterval(instance.idle);
     instance.idle = undefined;
     instance.child = undefined;
@@ -73,23 +74,18 @@ Streamer.prototype.play = function (opts, cb) {
 
   this.startIdle(opts.sess);
 
-  instance.child.send({
-    command: 'STOP',
-  });
+  instance.child.send('stop');
 
-  instance.child.once('message', function (data) {
+  instance.child.once('stopped', function (err, result) {
     try {
       remove.removeSync(util.tmpdir(opts.sess));
     } catch (e) {
     }
 
-    instance.child.send({
-      command: 'PLAY',
-      opts: opts,
-    });
+    instance.child.send('play', opts);
 
-    instance.child.once('message', function (data) {
-      cb(null, data.result);
+    instance.child.once('played', function (err, result) {
+      cb(err, result);
     });
   });
 };
