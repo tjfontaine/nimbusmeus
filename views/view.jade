@@ -1,1 +1,4 @@
-video(src='#{path}', controls, autoplay)
+if (path)
+  video(src='#{path}', controls, autoplay)
+else
+  h2 No Content Loaded
