@@ -8,10 +8,16 @@ html
     script(src='/js/jquery-1.7.2.js')
     script(src='/js/jquery.mobile-1.1.0.js')
   body
-    div(data-role='page', data-add-back-btn='true', data-position='fixed')
+    div(data-role='page', data-add-back-btn='true', data-position='fixed', data-title='#{title}')
       div(data-role='header')
         h1= title
-        a(href='/') Home
       div(data-role='content')!= body
       div(data-role='footer', data-position='fixed')
-        a(href='/settings') Settings
+        div(data-role='navbar')
+          ul
+            li
+              a(href='/', data-icon='home') Home
+            li
+              a(href='/settings', data-icon='gear') Settings
+            li
+              a(href='/nowplaying', data-icon='star') Now Playing
