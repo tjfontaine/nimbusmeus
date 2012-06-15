@@ -21,7 +21,7 @@ var app = module.exports = express.createServer();
 var streamer = require('./streamer');
 
 app.configure(function(){
-  app.use(express.logger());
+  //app.use(express.logger());
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
   app.use(express.cookieParser());
@@ -55,6 +55,7 @@ app.get('/', routes.index);
 app.get('/b/*', routes.listing);
 app.get('/v/*', routes.view);
 app.get('/stream/*', routes.stream);
+app.get('/nowplaying', routes.nowplaying);
 
 app.get('/tv/:device/:tuner', routes.tv);
 app.get('/view/tv/:device/:tuner/:channel/:program', routes.tv_view);
