@@ -118,10 +118,14 @@ exports.view = function (req, res) {
           return;
         }
 
-        res.render('view', {
+        req.session.nowplaying = {
           title: title,
           path: monitor.url,
-        });
+        };
+
+        req.session.save();
+
+        res.redirect('/nowplaying');
       });
     });;
   }
@@ -235,10 +239,13 @@ exports.tv_view = function (req, res) {
             });
             return;
           }
-          res.render('view', {
+
+          req.session.nowplaying = {
             title: 'Live TV',
             path: monitor.url,
-          });
+          };
+
+          res.redirect('/nowplaying');
         });
       });
     });
@@ -249,5 +256,13 @@ exports.thumbnail = function (req, res) {
   var spath = toSystem(req.params[0]);
   index.thumbnail(spath.path || 'DNE', function (err, result) {
     res.sendfile(result);
+  });
+};
+
+exports.nowplaying = function (req, res) {
+  var nowplaying = req.session.nowplaying || {};
+  res.render('view', {
+    title: nowplaying.title || 'No Media Playing',
+    path: nowplaying.path || '',
   });
 };
