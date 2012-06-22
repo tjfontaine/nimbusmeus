@@ -120,7 +120,7 @@ exports.view = function (req, res) {
 
         req.session.nowplaying = {
           title: title,
-          path: monitor.url,
+          path: '/stream/' + sessid + '/' + monitor.url,
         };
 
         req.session.save();
@@ -134,10 +134,17 @@ exports.view = function (req, res) {
 exports.stream = function (req, res) {
   var path = req.params[0];
   var sessid = req.session.hash;
+  var session = req.params.session;
+
+  // If airplay is going on it's coming from a different location
+  // we don't want to timeout the original render node
+  if (sessid != session) {
+    streamer.touch(session);
+  }
 
   var file = _path.normalize(_path.join(
-    util.tmpdir(), sessid, _path.join.apply(null, path.split('/')
-  )));
+    util.tmpdir(), session, path
+  ));
 
   res.sendfile(file);
 };
@@ -242,7 +249,7 @@ exports.tv_view = function (req, res) {
 
           req.session.nowplaying = {
             title: 'Live TV',
-            path: monitor.url,
+            path: '/stream/' + sessid + '/' + monitor.url,
           };
 
           res.redirect('/nowplaying');

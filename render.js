@@ -8,6 +8,7 @@ var util = require('./util');
 var vlc = require('vlc')([
   '-I', 'dummy',
   '--audio-language', 'eng',
+  '--quiet',
 ]);
 var vlm = vlc.vlm;
 
@@ -60,7 +61,7 @@ parent.on('play', function (opts) {
   }
 
   monitor.path = _path.join(tmpdir, 'stream.m3u8');
-  monitor.url = '/stream/stream.m3u8';
+  monitor.url = 'stream.m3u8';
 
   sout  = '#transcode{';
 
@@ -111,7 +112,7 @@ parent.on('play', function (opts) {
 
   sout += 'ratecontrol=true,';
   sout += 'index=' + monitor.path + ',';
-  sout += 'index-url=http://' + opts.host + '/stream/########.ts';
+  sout += 'index-url=http://' + opts.host + '/stream/' + opts.sess + '/########.ts';
   sout += '},';
 
   if (opts.type === 'audio') {

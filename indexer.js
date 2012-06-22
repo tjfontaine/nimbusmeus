@@ -6,6 +6,7 @@ var vlc = require('vlc')([
   '-I', 'dummy',
   '-V', 'dummy',
   //'--verbose', '3',
+  '--quiet',
   '--no-audio',
   '--no-stats',
   '--no-sub-autodetect-file',

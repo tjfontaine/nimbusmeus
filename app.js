@@ -54,7 +54,7 @@ app.configure('production', function(){
 app.get('/', routes.index);
 app.get('/b/*', routes.listing);
 app.get('/v/*', routes.view);
-app.get('/stream/*', routes.stream);
+app.get('/stream/:session/*', routes.stream);
 app.get('/nowplaying', routes.nowplaying);
 
 app.get('/tv/:device/:tuner', routes.tv);
