@@ -13,7 +13,7 @@ var vlc = require('vlc')([
 var vlm = vlc.vlm;
 
 var parent = require('./ipc')(process);
-var config = require('./config');
+var config = require('../config');
 
 var first = true;
 
@@ -112,7 +112,8 @@ parent.on('play', function (opts) {
 
   sout += 'ratecontrol=true,';
   sout += 'index=' + monitor.path + ',';
-  sout += 'index-url=http://' + opts.host + '/stream/' + opts.sess + '/########.ts';
+  // TODO XXX FIXME this should be opts.mount
+  sout += 'index-url=http://' + opts.host + '/media/stream/' + opts.sess + '/########.ts';
   sout += '},';
 
   if (opts.type === 'audio') {

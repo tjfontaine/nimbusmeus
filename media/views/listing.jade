@@ -4,10 +4,10 @@ block content
   ul(data-role='listview')
     each dir in dirs
       li
-        a(href='/b/#{dir.path}')= dir.name
+        a(href='/media/b/#{dir.path}')= dir.name
     each file in files
       li
-        a(href='/v/#{file.path}')
+        a(href='/media/v/#{file.path}')
           p
             h2
               if (file.tracknumber)
@@ -20,4 +20,4 @@ block content
             p #{file.hours}:#{file.minutes}:#{file.seconds}
 
           if (file.type === 'video')
-            img(src='/thumbnail/#{file.path}')
+            img(src='/media/thumbnail/#{file.path}')

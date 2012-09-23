@@ -1,6 +1,6 @@
 var _path = require('path');
 
-var config = require('./config');
+var config = require('../config');
 
 exports.toSystem = function (spath) {
   var result = {

@@ -4,5 +4,5 @@ block content
   ul(data-role='listview')
     for channel in channels
       li
-        a(href='/view/tv/#{device}/#{tuner}/#{channel.channel}/#{channel.program}') 
+        a(href='/media/view/tv/#{device}/#{tuner}/#{channel.channel}/#{channel.program}')
           label #{channel.virtual} #{channel.description}

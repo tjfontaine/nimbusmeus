@@ -3,7 +3,7 @@ var _cp = require('child_process');
 var _os = require('os');
 var _net = require('net');
 
-var config = require('./config');
+var config = require('../config');
 
 exports.parse = function (file, cb) {
   _fs.readFile(file, 'utf8', function (err, data) {

@@ -8,7 +8,7 @@ var util = require('../util');
 var toSystem = util.toSystem;
 var toRelative = util.toRelative;
 
-var config = require('../config');
+var config = require('../../config');
 var streamer = require('../streamer');
 var hdhomerun = require('../hdhomerun');
 
@@ -120,12 +120,12 @@ exports.view = function (req, res) {
 
         req.session.nowplaying = {
           title: title,
-          path: '/stream/' + sessid + '/' + monitor.url,
+          path: 'stream/' + sessid + '/' + monitor.url,
         };
 
         req.session.save();
 
-        res.redirect('/nowplaying');
+        res.redirect('nowplaying');
       });
     });;
   }
@@ -249,10 +249,10 @@ exports.tv_view = function (req, res) {
 
           req.session.nowplaying = {
             title: 'Live TV',
-            path: '/stream/' + sessid + '/' + monitor.url,
+            path: 'stream/' + sessid + '/' + monitor.url,
           };
 
-          res.redirect('/nowplaying');
+          res.redirect('nowplaying');
         });
       });
     });
@@ -270,6 +270,6 @@ exports.nowplaying = function (req, res) {
   var nowplaying = req.session.nowplaying || {};
   res.render('view', {
     title: nowplaying.title || 'No Media Playing',
-    path: nowplaying.path || '',
+    path: '/media/' + nowplaying.path || '',
   });
 };

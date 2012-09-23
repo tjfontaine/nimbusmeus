@@ -15,8 +15,8 @@ var vlc = require('vlc')([
   '--no-snapshot-preview',
 ]);
 
-var config = require('./config');
-var db = require('./db');
+var config = require('../config');
+var db = require('../db');
 
 var ignore_regexps = [];
 config.ignore.forEach(function (pat) {

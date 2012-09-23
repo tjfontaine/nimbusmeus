@@ -4,7 +4,7 @@ var _fs = require('fs');
 
 var remove = require('remove');
 
-var config = require('./config');
+var config = require('../config');
 var util = require('./util');
 var ipc = require('./ipc');
 
