@@ -22,10 +22,6 @@ app.configure(function(){
   //app.use(express.logger());
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
-  app.use(express.cookieParser());
-  app.use(express.session({ secret: "keyboard cat" }));
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
   app.use(function (req, res, next) {
     if (!req.session.hash) {
       req.session.hash = require('crypto').createHash('md5')
@@ -36,14 +32,6 @@ app.configure(function(){
     next();
   });
   app.use(app.router);
-});
-
-app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
-
-app.configure('production', function(){
-  app.use(express.errorHandler());
 });
 
 // Routes
