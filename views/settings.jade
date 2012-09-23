@@ -1,21 +1,24 @@
-form(method='POST', data-ajax='false')
-  div(data-role='fieldcontain')
-    label(for='bandwidth') BW:
-    input(data-type='range', type='number', name='bandwidth', min='0', max='2048', value='#{bandwidth}')
+extends layout
 
-  div(data-role='fieldcontain')
-    label(for='fps') FPS:
-    input(data-type='range', type='number', name='fps', min='0', max='30', value='#{fps}')
+block content
+  form(method='POST', data-ajax='false')
+    div(data-role='fieldcontain')
+      label(for='bandwidth') BW:
+      input(data-type='range', type='number', name='bandwidth', min='0', max='2048', value='#{bandwidth}')
 
-  div(data-role='fieldcontain')
-    label(for='width') Width:
-    input(data-type='range', type='number', name='width', min='0', max='1280', value='#{width}')
+    div(data-role='fieldcontain')
+      label(for='fps') FPS:
+      input(data-type='range', type='number', name='fps', min='0', max='30', value='#{fps}')
 
-  div(data-role='fieldcontain')
-    label(for='height') Height:
-    input(data-type='range', type='number', name='height', value='#{height}')
+    div(data-role='fieldcontain')
+      label(for='width') Width:
+      input(data-type='range', type='number', name='width', min='0', max='1280', value='#{width}')
 
-  if(refer)
-    input(type='hidden', name='refer', value='#{refer}')
+    div(data-role='fieldcontain')
+      label(for='height') Height:
+      input(data-type='range', type='number', name='height', value='#{height}')
 
-  input(type='submit', value='save')
+    if(refer)
+      input(type='hidden', name='refer', value='#{refer}')
+
+    input(type='submit', value='save')

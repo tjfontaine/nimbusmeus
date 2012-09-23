@@ -1,8 +1,11 @@
-ul(data-role='listview')
-  each collection in collections
-    li
-      a(href="/b/#{collection.name}")= collection.name
-  each hd in hdhomerun
-    each tuner in hd.tuners
+extends layout
+
+block content
+  ul(data-role='listview')
+    each collection in collections
       li
-        a(href="/tv/#{hd.name}/#{tuner}") #{hd.name} #{tuner}
+        a(href="/b/#{collection.name}")= collection.name
+    each hd in hdhomerun
+      each tuner in hd.tuners
+        li
+          a(href="/tv/#{hd.name}/#{tuner}") #{hd.name} #{tuner}

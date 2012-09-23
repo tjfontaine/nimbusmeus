@@ -1,23 +1,23 @@
-ul(data-role='listview')
-  each dir in dirs
-    li
-      a(href='/b/#{dir.path}')= dir.name
-  each file in files
-    li
-      a(href='/v/#{file.path}')
-        p
-          h2
-            if (file.tracknumber)
-              #{file.tracknumber} - #{file.title || file.name}
-            else
-              #{file.name}
+extends layout
 
-        if (file.duration)
-          p #{file.artist||"Unknown Artist"} - #{file.album||"Unknown Album"}
+block content
+  ul(data-role='listview')
+    each dir in dirs
+      li
+        a(href='/b/#{dir.path}')= dir.name
+    each file in files
+      li
+        a(href='/v/#{file.path}')
           p
-            if(file.hours)
-              #{file.hours}:
-            #{file.minutes}:#{file.seconds}
+            h2
+              if (file.tracknumber)
+                #{file.tracknumber} - #{file.title || file.name}
+              else
+                #{file.name}
 
-        if (file.type === 'video')
-          img(src='/thumbnail/#{file.path}')
+          if (file.duration)
+            p #{file.artist||"Unknown Artist"} - #{file.album||"Unknown Album"}
+            p #{file.hours}:#{file.minutes}:#{file.seconds}
+
+          if (file.type === 'video')
+            img(src='/thumbnail/#{file.path}')

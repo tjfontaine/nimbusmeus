@@ -11,7 +11,8 @@ html
     div(data-role='page', data-add-back-btn='true', data-position='fixed', data-title='#{title}')
       div(data-role='header')
         h1= title
-      div(data-role='content')!= body
+      div(data-role='content')
+        block content
       div(data-role='footer', data-position='fixed')
         div(data-role='navbar')
           ul

@@ -1,5 +1,8 @@
-p= error
-if (error.stdout)
-  p= error.stdout
-if (error.stderr)
-  p= error.stderr
+extends layout
+
+block contents
+  p= error
+  if (error.stdout)
+    p= error.stdout
+  if (error.stderr)
+    p= error.stderr

@@ -14,7 +14,7 @@ var remove = require('remove');
 
 var config = require('./config');
 
-var app = module.exports = express.createServer();
+var app = module.exports = express();
 
 // Configuration
 
@@ -88,7 +88,8 @@ try {
 }
 
 app.listen(8000, function(){
-  console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+  //console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
+  console.log("listening", app);
 });
 
 process.on('SIGINT', function () {
