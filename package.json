@@ -4,6 +4,7 @@
   , "private": true
   , "dependencies": {
       "express": ">= 3.0.0rc4"
+    , "connect-auth": ">= 0.5.3"
     , "jade": ">= 0.27.4"
     , "remove": ">= 0.1.2"
     , "sqlite3": ">= 2.1.3"
